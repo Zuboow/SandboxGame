@@ -33,7 +33,7 @@ public class BuildingManager : MonoBehaviour
                     ManageKeys(kcode);
             }
 
-            if (Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit) && !Inventory.inventoryOpened)
             {
                 if ((hit.transform.gameObject.tag == "Buildable" || hit.transform.gameObject.tag == "Terrain") && Vector3.Distance(hit.point, transform.position) < 3f)
                 {
@@ -50,7 +50,7 @@ public class BuildingManager : MonoBehaviour
                         spawner.SetActive(true);
                         if (!spawner.transform.Find("collider").GetComponent<RotationChecker>().rotated) //not rotated objects are for example pillars
                         {
-                            if (!hit.collider.gameObject.GetComponent<RotationChecker>().rotated)
+                            if (!hit.collider.gameObject.GetComponent<RotationChecker>().rotated) //stick to not rotated objects
                             {
                                 if (Vector3.Distance(hit.collider.ClosestPointOnBounds(hit.point), hit.collider.bounds.min) //stick to top
                                         > Vector3.Distance(hit.collider.ClosestPointOnBounds(hit.point), hit.collider.bounds.max))
@@ -62,7 +62,7 @@ public class BuildingManager : MonoBehaviour
                                     spawner.transform.position = hit.collider.bounds.center - new Vector3(0, hit.collider.bounds.extents.y * 3, 0);
                                 }
                             }
-                            else
+                            else //stick to rotated objects
                             {
                                 if (Vector3.Distance(hit.collider.ClosestPointOnBounds(hit.point), hit.collider.bounds.min)
                                         < Vector3.Distance(hit.collider.ClosestPointOnBounds(hit.point), hit.collider.bounds.max)) //stick to left side
@@ -108,16 +108,19 @@ public class BuildingManager : MonoBehaviour
                         spawner.SetActive(false);
                     }
 
-                    if (Input.GetMouseButtonDown(0)) //spawn object
+                    if (!Inventory.inventoryOpened)
                     {
-                        BuildObject(buildingTarget, hit.collider.gameObject.transform.parent);
-                    }
-                    if (Input.GetMouseButtonDown(1) && hit.transform.gameObject.tag == "Buildable") //remove object
-                    {
-                        if (hit.collider.transform.parent != null)
-                            Destroy(hit.collider.transform.parent.gameObject);
-                        else
-                            Destroy(hit.collider.gameObject);
+                        if (Input.GetMouseButtonDown(0)) //spawn object
+                        {
+                            BuildObject(buildingTarget, hit.collider.gameObject.transform.parent);
+                        }
+                        if (Input.GetMouseButtonDown(1) && hit.transform.gameObject.tag == "Buildable") //remove object
+                        {
+                            if (hit.collider.transform.parent != null)
+                                Destroy(hit.collider.transform.parent.gameObject);
+                            else
+                                Destroy(hit.collider.gameObject);
+                        }
                     }
 
                 }
@@ -176,20 +179,6 @@ public class BuildingManager : MonoBehaviour
         {
             Destroy(spawner);
             spawner = Instantiate(objectBuilders[2]);
-            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
-            spawner.SetActive(false);
-        }
-        else if (key == KeyCode.Alpha4)
-        {
-            Destroy(spawner);
-            spawner = Instantiate(objectBuilders[3]);
-            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
-            spawner.SetActive(false);
-        }
-        else if (key == KeyCode.Alpha5)
-        {
-            Destroy(spawner);
-            spawner = Instantiate(objectBuilders[4]);
             spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
             spawner.SetActive(false);
         }
