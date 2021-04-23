@@ -3,22 +3,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class SlotManager : MonoBehaviour
 {
     GameObject cameraObject;
+    static GameObject grabbedObject;
+    public static int grabbedItemSlotID = -1;
+    static float grabbedObjectDistance = 0.15f;
 
     void Start()
     {
+        if (grabbedObject == null)
+            grabbedObject = new GameObject();
+
         cameraObject = GameObject.FindGameObjectWithTag("MainCamera");
+    }
+
+    private void Update()
+    {
+        if (grabbedItemSlotID != -1)
+        {
+            MoveGrabbedItem(grabbedObject);
+        }
     }
 
     void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButtonDown(1) && grabbedItemSlotID == -1)
         {
-            Debug.Log("Removing item...");
             RemoveItem(Int32.Parse(name.Split('_')[1]));
+        }
+        if (Input.GetMouseButtonDown(0) && grabbedItemSlotID == -1)
+        {
+            GrabItem(Int32.Parse(name.Split('_')[1]));
+        }
+        else if (Input.GetMouseButtonDown(0) && grabbedItemSlotID != -1)
+        {
+            ManageMovingObjects(Int32.Parse(name.Split('_')[1]));
         }
     }
 
@@ -48,5 +70,30 @@ public class SlotManager : MonoBehaviour
             Inventory.items[slotID] = -1;
             cameraObject.GetComponent<Inventory>().ReloadInventory();
         }
+    }
+
+    void GrabItem(int slotID)
+    {
+        if (Inventory.items[slotID] != -1)
+        {
+            grabbedObject = transform.Find("spriteSpawner(Clone)").gameObject;
+            transform.SetAsLastSibling();
+            grabbedItemSlotID = slotID;
+        }
+    }
+
+    static void MoveGrabbedItem(GameObject grabbedObjectInstance)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        grabbedObjectInstance.transform.position = ray.origin + (ray.direction * grabbedObjectDistance);
+    }
+
+    void ManageMovingObjects(int selectedItemSlotID)
+    {
+        int originalIDFromSelectedSlot = Inventory.items[selectedItemSlotID];
+        Inventory.items[selectedItemSlotID] = Inventory.items[grabbedItemSlotID];
+        Inventory.items[grabbedItemSlotID] = originalIDFromSelectedSlot;
+        grabbedItemSlotID = -1;
+        cameraObject.GetComponent<Inventory>().ReloadInventory();
     }
 }

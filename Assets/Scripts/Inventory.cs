@@ -9,7 +9,7 @@ public class Inventory : MonoBehaviour
     float length = 6, width = 8;
     float offsetX = 90f, offsetY = 90f;
     public GameObject slot, cameraCanvas, spriteSpawner;
-    List<GameObject> spawnedSlots = new List<GameObject>();
+    public static List<GameObject> spawnedSlots = new List<GameObject>();
     public static bool inventoryOpened = false;
 
     void Start()
@@ -73,8 +73,8 @@ public class Inventory : MonoBehaviour
         {
             Destroy(slot);
         }
-        spawnedSlots = new List<GameObject>();
-
+        spawnedSlots.Clear();
+        SlotManager.grabbedItemSlotID = -1;
         inventoryOpened = false;
     }
 
