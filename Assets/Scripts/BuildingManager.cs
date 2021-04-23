@@ -6,9 +6,7 @@ using UnityEngine;
 public class BuildingManager : MonoBehaviour
 {
     public List<GameObject> objectBuilders;
-    List<GameObject> anchors = new List<GameObject>();
-    bool buildingMode = false, pivoted = false, rotated = false;
-    string pivotSide = "";
+    bool buildingMode = false;
     Vector3 buildingTarget;
     GameObject spawner;
     float rotationOffset = 0f;
@@ -22,21 +20,6 @@ public class BuildingManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             buildingMode = !buildingMode;
-
-            for (int x = 0; x < anchors.Count; x++) //hides all anchors
-            {
-                if (anchors[x] == null)
-                {
-                    anchors.RemoveAt(x);
-                } 
-                else
-                {
-                    if (buildingMode)
-                        anchors[x].SetActive(true);
-                    else
-                        anchors[x].SetActive(false);
-                }
-            }
         }
 
         if (buildingMode)
@@ -44,67 +27,100 @@ public class BuildingManager : MonoBehaviour
             RaycastHit hit;
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out hit))
+            foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode))) //manage pressed keys
             {
-                if ((hit.transform.gameObject.tag == "Buildable" || hit.transform.gameObject.tag == "Terrain" || hit.transform.gameObject.tag == "Anchor")
-                    && Vector3.Distance(hit.point, transform.position) < 2f)
+                if (Input.GetKeyDown(kcode))
+                    ManageKeys(kcode);
+            }
+
+            if (Physics.Raycast(ray, out hit) && !Inventory.inventoryOpened)
+            {
+                if ((hit.transform.gameObject.tag == "Buildable" || hit.transform.gameObject.tag == "Terrain") && Vector3.Distance(hit.point, transform.position) < 3f)
                 {
-                    if (hit.collider.name == "leftPivot" || hit.collider.name == "rightPivot") //sticks builder to anchor
-                    {
-                        spawner.SetActive(true);
-                        spawner.transform.position = hit.collider.gameObject.transform.position;
-                        spawner.gameObject.transform.Find("mesh").GetComponent<MeshFilter>().mesh = Resources.Load<GameObject>("Prefabs/Buildables/" +
-                            spawner.name.Split('(')[0].Trim() + "_pivotL").transform.Find("mesh").GetComponent<MeshFilter>().sharedMesh;
-                        if (hit.collider.name == "leftPivot")
-                        {
-                            if (!hit.collider.gameObject.transform.parent.gameObject.GetComponent<RotationChecker>().rotated)
-                            {
-                                rotated = true;
-                                spawner.transform.rotation = Quaternion.Euler(0, rotationOffset - 180, 0);
-                            }
-                            else
-                                spawner.transform.rotation = Quaternion.Euler(0, rotationOffset - 180, 0);
-                        }
-                        if (hit.collider.name == "rightPivot")
-                        {
-                            if (!hit.collider.gameObject.transform.parent.gameObject.GetComponent<RotationChecker>().rotated)
-                            {
-                                rotated = false;
-                                spawner.transform.rotation = Quaternion.Euler(0, rotationOffset, 0);
-                            }
-                            else 
-                                spawner.transform.rotation = Quaternion.Euler(0, rotationOffset, 0);
-                        }
-                        pivoted = true;
-                        pivotSide = hit.collider.gameObject.GetComponent<MeshFilter>().mesh.name == "leftPivot" ? "right" : "left";
-                        buildingTarget = hit.collider.gameObject.transform.position;
-                    }
-                    else //building without sticking to objects
+                    if (hit.collider.tag != "Buildable") //don't stick spawner
                     {
                         spawner.SetActive(true);
                         spawner.transform.position = hit.point;
                         spawner.transform.rotation = Quaternion.Euler(0, rotationOffset, 0);
-                        rotated = false;
-                        spawner.gameObject.transform.Find("mesh").GetComponent<MeshFilter>().mesh = Resources.Load<GameObject>("Prefabs/Buildables/" +
-                            spawner.name.Split('(')[0].Trim() + "_straight").transform.Find("mesh").GetComponent<MeshFilter>().sharedMesh;
-                        pivoted = false;
                         buildingTarget = hit.point;
                     }
-
-
-                    foreach (KeyCode kcode in Enum.GetValues(typeof(KeyCode))) //manages pressed keys
+                    else if (hit.collider.gameObject.GetComponent<RotationChecker>() != null) //stick spawner to existing object
                     {
-                        if (Input.GetKeyDown(kcode))
-                            ManageKeys(kcode);
+                        spawner.transform.rotation = Quaternion.Euler(0, rotationOffset, 0);
+                        spawner.SetActive(true);
+                        if (!spawner.transform.Find("collider").GetComponent<RotationChecker>().rotated) //not rotated objects are for example pillars
+                        {
+                            if (!hit.collider.gameObject.GetComponent<RotationChecker>().rotated) //stick to not rotated objects
+                            {
+                                if (Vector3.Distance(hit.collider.ClosestPointOnBounds(hit.point), hit.collider.bounds.min) //stick to top
+                                        > Vector3.Distance(hit.collider.ClosestPointOnBounds(hit.point), hit.collider.bounds.max))
+                                {
+                                    spawner.transform.position = hit.collider.bounds.center + new Vector3(0, hit.collider.bounds.extents.y, 0);
+                                }
+                                else //stick to bottom
+                                {
+                                    spawner.transform.position = hit.collider.bounds.center - new Vector3(0, hit.collider.bounds.extents.y * 3, 0);
+                                }
+                            }
+                            else //stick to rotated objects
+                            {
+                                if (Vector3.Distance(hit.collider.ClosestPointOnBounds(hit.point), hit.collider.bounds.min)
+                                        < Vector3.Distance(hit.collider.ClosestPointOnBounds(hit.point), hit.collider.bounds.max)) //stick to left side
+                                {
+                                    spawner.transform.position =
+                                        new Vector3(hit.collider.gameObject.GetComponent<RotationChecker>().offset == 0 ? hit.collider.bounds.min.x
+                                        : hit.collider.gameObject.GetComponent<RotationChecker>().offset == 180 ? hit.collider.bounds.min.x
+                                        : hit.collider.bounds.center.x, hit.collider.gameObject.transform.position.y, hit.collider.gameObject.GetComponent<RotationChecker>().offset == 90 ? hit.collider.bounds.min.z
+                                        : hit.collider.gameObject.GetComponent<RotationChecker>().offset == 270 ? hit.collider.bounds.min.z
+                                        : hit.collider.bounds.center.z);
+                                }
+                                else //stick to right side
+                                {
+                                    spawner.transform.position =
+                                        new Vector3(hit.collider.gameObject.GetComponent<RotationChecker>().offset == 0 ? hit.collider.bounds.max.x
+                                        : hit.collider.gameObject.GetComponent<RotationChecker>().offset == 180 ? hit.collider.bounds.max.x
+                                        : hit.collider.bounds.center.x, hit.collider.gameObject.transform.position.y, hit.collider.gameObject.GetComponent<RotationChecker>().offset == 90 ? hit.collider.bounds.max.z
+                                        : hit.collider.gameObject.GetComponent<RotationChecker>().offset == 270 ? hit.collider.bounds.max.z
+                                        : hit.collider.bounds.center.z);
+                                }
+                            }
+                        }
+                        else //rotated objects are objects like walls, fences, etc.
+                        {
+                            if (!hit.collider.gameObject.GetComponent<RotationChecker>().rotated) //touches not rotated
+                            {
+                                spawner.transform.position = hit.collider.bounds.center - new Vector3(0, hit.collider.bounds.extents.y, 0);
+                            }
+                            else //touches rotated
+                            {
+                                spawner.transform.position = hit.collider.bounds.center
+                                + new Vector3(hit.collider.gameObject.GetComponent<RotationChecker>().offset == 0 ? hit.collider.bounds.extents.x
+                                : hit.collider.gameObject.GetComponent<RotationChecker>().offset == 180 ? -hit.collider.bounds.extents.x
+                                : 0, 0, hit.collider.gameObject.GetComponent<RotationChecker>().offset == 90 ? -hit.collider.bounds.extents.z
+                                : hit.collider.gameObject.GetComponent<RotationChecker>().offset == 270 ? hit.collider.bounds.extents.z
+                                : 0);
+                            }
+                        }
+                        buildingTarget = spawner.transform.position;
+                    }
+                    else
+                    {
+                        spawner.SetActive(false);
                     }
 
-                    if (Input.GetMouseButtonDown(0))
+                    if (!Inventory.inventoryOpened)
                     {
-                        BuildObject(buildingTarget, hit.collider.gameObject.transform.parent);
-                    }
-                    if (Input.GetMouseButtonDown(1) && hit.transform.gameObject.tag == "Buildable")
-                    {
-                        Destroy(hit.collider.gameObject.transform.parent.gameObject);
+                        if (Input.GetMouseButtonDown(0)) //spawn object
+                        {
+                            BuildObject(buildingTarget, hit.collider.gameObject.transform.parent);
+                        }
+                        if (Input.GetMouseButtonDown(1) && hit.transform.gameObject.tag == "Buildable") //remove object
+                        {
+                            if (hit.collider.transform.parent != null)
+                                Destroy(hit.collider.transform.parent.gameObject);
+                            else
+                                Destroy(hit.collider.gameObject);
+                        }
                     }
 
                 }
@@ -126,20 +142,20 @@ public class BuildingManager : MonoBehaviour
 
     void BuildObject(Vector3 target, Transform parent)
     {
-        GameObject spawnedBuildable = Instantiate(Resources.Load<GameObject>("Prefabs/Buildables/" + spawner.name.Split('(')[0].Trim() + (!pivoted ? "_straight" : "_pivotL")), 
-            target, spawner.transform.rotation);
-        if ((rotated && spawnedBuildable.tag != "NoRotation") || (!rotated && spawnedBuildable.tag == "NoRotation"))
-        {
-            spawnedBuildable.GetComponent<RotationChecker>().rotated = true;
-            if (spawnedBuildable.tag == "NoRotation")
-            {
-                var lPivot = spawnedBuildable.transform.Find("leftPivot").gameObject;
-                var rPivot = spawnedBuildable.transform.Find("rightPivot").gameObject;
-                lPivot.name = "rightPivot";
-                rPivot.name = "leftPivot";
-            }
-        }
-        anchors.AddRange(GameObject.FindGameObjectsWithTag("Anchor"));
+        GameObject spawnedBuildable = Instantiate(spawner, target, spawner.transform.rotation);
+        spawnedBuildable.GetComponent<MeshRenderer>().material = Resources.Load<Material>("Materials/" + "OrangeTexture");
+        if (spawnedBuildable.GetComponent<BoxCollider>() != null)
+            spawnedBuildable.GetComponent<BoxCollider>().isTrigger = false;
+        else
+            spawnedBuildable.GetComponent<MeshCollider>().isTrigger = false;
+
+        if (spawnedBuildable.name.Split('_')[1].Split('(')[0].Trim() == "raycastable")
+            spawnedBuildable.layer = 0;
+        spawnedBuildable.transform.Find("collider").GetComponent<BoxCollider>().isTrigger = false;
+        spawnedBuildable.transform.Find("collider").gameObject.tag = "Buildable";
+        spawnedBuildable.transform.Find("collider").gameObject.layer = 0;
+        spawnedBuildable.transform.Find("collider").gameObject.name = spawner.name;
+        spawnedBuildable.name = spawner.name;
         spawner.transform.rotation = Quaternion.Euler(0, rotationOffset, 0);
     }
 
@@ -149,41 +165,38 @@ public class BuildingManager : MonoBehaviour
         {
             Destroy(spawner);
             spawner = Instantiate(objectBuilders[0]);
+            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
             spawner.SetActive(false);
         }
         else if (key == KeyCode.Alpha2)
         {
             Destroy(spawner);
             spawner = Instantiate(objectBuilders[1]);
+            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
             spawner.SetActive(false);
         }
         else if (key == KeyCode.Alpha3)
         {
             Destroy(spawner);
             spawner = Instantiate(objectBuilders[2]);
-            spawner.SetActive(false);
-        }
-        else if (key == KeyCode.Alpha4)
-        {
-            Destroy(spawner);
-            spawner = Instantiate(objectBuilders[3]);
-            spawner.SetActive(false);
-        }
-        else if (key == KeyCode.Alpha5)
-        {
-            Destroy(spawner);
-            spawner = Instantiate(objectBuilders[4]);
+            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
             spawner.SetActive(false);
         }
         else if (key == KeyCode.E)
         {
-            spawner.transform.Rotate(Vector3.up, 30, 0);
-            rotationOffset += 30;
+            spawner.transform.Rotate(Vector3.up, 90, 0);
+            rotationOffset += 90;
+            if (rotationOffset == 360)
+                rotationOffset = 0;
+            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
         }
         else if (key == KeyCode.Q)
         {
-            spawner.transform.Rotate(Vector3.up, -30, 0);
-            rotationOffset -= 30;
+            spawner.transform.Rotate(Vector3.up, -90, 0);
+            rotationOffset -= 90;
+            if (rotationOffset == -90)
+                rotationOffset = 270;
+            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
         }
     }
 }

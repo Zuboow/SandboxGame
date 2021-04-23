@@ -19,7 +19,10 @@ public class CameraMovement : MonoBehaviour
         float yAxis = Input.GetAxis("Mouse Y");
         float xAxis = Input.GetAxis("Mouse X");
 
-        transform.RotateAround(player.transform.position, -Vector3.up, (-xAxis * sensitivity));
-        transform.RotateAround(player.transform.position, transform.right, (-yAxis * sensitivity));
+        if (!Inventory.inventoryOpened)
+        {
+            transform.RotateAround(player.transform.position, -Vector3.up, (-xAxis * sensitivity));
+            transform.RotateAround(player.transform.position, transform.right, (-yAxis * sensitivity));
+        }
     }
 }

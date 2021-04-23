@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class RotationChecker : MonoBehaviour
 {
-    public bool rotated = false;
+    public bool rotated = false, wholeCollider = false;
+    public float offset = 0;
 }
