@@ -12,6 +12,7 @@ public class SlotManager : MonoBehaviour
     public static int grabbedItemSlotID = -1;
     static float grabbedObjectDistance = 0.15f;
 
+
     void Start()
     {
         if (grabbedObject == null)
@@ -28,19 +29,19 @@ public class SlotManager : MonoBehaviour
         }
     }
 
-    void OnMouseOver()
+    public void ManageMouseInput(string name)
     {
         if (Input.GetMouseButtonDown(1) && grabbedItemSlotID == -1)
         {
-            RemoveItem(Int32.Parse(name.Split('_')[1]));
+            RemoveItem(Int32.Parse(name));
         }
         if (Input.GetMouseButtonDown(0) && grabbedItemSlotID == -1)
         {
-            GrabItem(Int32.Parse(name.Split('_')[1]));
+            GrabItem(Int32.Parse(name));
         }
         else if (Input.GetMouseButtonDown(0) && grabbedItemSlotID != -1)
         {
-            ManageMovingObjects(Int32.Parse(name.Split('_')[1]));
+            ManageMovingObjects(Int32.Parse(name));
         }
     }
 
@@ -84,8 +85,7 @@ public class SlotManager : MonoBehaviour
 
     static void MoveGrabbedItem(GameObject grabbedObjectInstance)
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        grabbedObjectInstance.transform.position = ray.origin + (ray.direction * grabbedObjectDistance);
+        grabbedObjectInstance.transform.position = Input.mousePosition;
     }
 
     void ManageMovingObjects(int selectedItemSlotID)

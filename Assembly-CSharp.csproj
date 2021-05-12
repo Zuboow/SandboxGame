@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\ItemGrabber.cs" />
     <Compile Include="Assets\Scripts\PlayerFollower.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
+    <Compile Include="Assets\Scripts\RaycastChecker.cs" />
     <Compile Include="Assets\Scripts\RotationChecker.cs" />
     <Compile Include="Assets\Scripts\SlotManager.cs" />
     <Reference Include="Unity.Timeline.Editor">
