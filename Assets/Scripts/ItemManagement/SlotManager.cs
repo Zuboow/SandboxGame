@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class SlotManager : MonoBehaviour
 {
-    GameObject cameraObject;
+    static GameObject cameraObject;
     static GameObject grabbedObject;
     public static int grabbedItemSlotID = -1;
     public static bool grabbedItemSlotInHotbar = false;
@@ -56,7 +56,7 @@ public class SlotManager : MonoBehaviour
                 {
                     if (id == i.id)
                     {
-                        Inventory.items[key.Key] = new Item(id, i.name, i.spriteName, i.prefabName, quantityAdded);
+                        Inventory.items[key.Key] = new Item(id, i.name, i.spriteName, i.prefabName, i.buildablePrefabName, quantityAdded, i.basicPrice, i.buildable, i.consumable);
                         if (Inventory.inventoryOpened)
                             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadInventory();
 
@@ -68,8 +68,20 @@ public class SlotManager : MonoBehaviour
         return false;
     }
 
+    public static void DestroyItem(int slotID, string slotType)
+    {
+        switch (slotType)
+        {
+            case "slot":
+                Inventory.items[slotID] = null;
+                break;
+            case "hotbarSlot":
+                Inventory.hotbarItems[slotID] = null;
+                break;
+        }
+    }
 
-    public void RemoveItem(int slotID, string slotType)
+    public static void RemoveItem(int slotID, string slotType)
     {
         switch (slotType)
         {
@@ -121,12 +133,12 @@ public class SlotManager : MonoBehaviour
 
     static void MoveGrabbedItem(GameObject grabbedObjectInstance)
     {
-        grabbedObjectInstance.transform.position = Input.mousePosition;
+        if (grabbedObjectInstance != null)
+            grabbedObjectInstance.transform.position = Input.mousePosition;
     }
 
     void ManageMovingObjects(int selectedItemSlotID, string slotType)
     {
-        Debug.Log(selectedItemSlotID + " in " + slotType);
         Item originalItemFromSelectedSlot = slotType == "hotbarSlot" ? Inventory.hotbarItems[selectedItemSlotID] : Inventory.items[selectedItemSlotID];
         if (slotType == "slot")
         {

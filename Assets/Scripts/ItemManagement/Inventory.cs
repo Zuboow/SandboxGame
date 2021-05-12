@@ -127,8 +127,13 @@ public class Inventory : MonoBehaviour
     public void ReloadInventory()
     {
         CloseInventory();
-        CloseHotbar();
         OpenInventory();
+        ReloadHotbar();
+    }
+
+    public void ReloadHotbar()
+    {
+        CloseHotbar();
         OpenHotbar();
     }
 

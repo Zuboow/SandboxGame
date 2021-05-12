@@ -5,14 +5,16 @@ using UnityEngine;
 
 public class BuildingManager : MonoBehaviour
 {
-    public List<GameObject> objectBuilders;
+    public GameObject buildingIcon;
     bool buildingMode = false;
     Vector3 buildingTarget;
     GameObject spawner;
+    int selectedHotbarSlot = -1, selectedHotbarSlotItemID = -1;
     float rotationOffset = 0f;
     void Start()
     {
-        spawner = Instantiate(objectBuilders[0]);
+        spawner = new GameObject();
+        buildingIcon.SetActive(false);
     }
 
     void Update()
@@ -20,6 +22,7 @@ public class BuildingManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.B))
         {
             buildingMode = !buildingMode;
+            buildingIcon.SetActive(buildingMode); 
         }
 
         if (buildingMode)
@@ -35,7 +38,25 @@ public class BuildingManager : MonoBehaviour
 
             if (Physics.Raycast(ray, out hit) && !Inventory.inventoryOpened)
             {
-                if ((hit.transform.gameObject.tag == "Buildable" || hit.transform.gameObject.tag == "Terrain") && Vector3.Distance(hit.point, transform.position) < 3f)
+                if (selectedHotbarSlot != -1 && Inventory.hotbarItems[selectedHotbarSlot] != null && Inventory.hotbarItems[selectedHotbarSlot].id != selectedHotbarSlotItemID) //check if items have been replaced while in building mode
+                {
+                    Destroy(spawner);
+                    spawner = Instantiate(Resources.Load<GameObject>("Prefabs/Buildables/" + Inventory.hotbarItems[selectedHotbarSlot].buildablePrefabName));
+                    spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
+                }
+                if (!Inventory.inventoryOpened) //remove object
+                {
+                    if (Input.GetMouseButtonDown(1) && hit.transform.gameObject.tag == "Buildable") 
+                    {
+                        AddRemovedBuildableBackToInventory(hit.transform.gameObject.name);
+
+                        if (hit.collider.transform.parent != null)
+                            Destroy(hit.collider.transform.parent.gameObject);
+                        else
+                            Destroy(hit.collider.gameObject);
+                    }
+                }
+                if ((hit.transform.gameObject.tag == "Buildable" || hit.transform.gameObject.tag == "Terrain") && Vector3.Distance(hit.point, transform.position) < 3f && selectedHotbarSlot != -1 && Inventory.hotbarItems[selectedHotbarSlot] != null)
                 {
                     if (hit.collider.tag != "Buildable") //don't stick spawner
                     {
@@ -108,21 +129,15 @@ public class BuildingManager : MonoBehaviour
                         spawner.SetActive(false);
                     }
 
-                    if (!Inventory.inventoryOpened)
+                    if (!Inventory.inventoryOpened) //spawn object
                     {
-                        if (Input.GetMouseButtonDown(0)) //spawn object
+                        if (Input.GetMouseButtonDown(0) && spawner.GetComponent<MeshRenderer>() != null) 
                         {
                             BuildObject(buildingTarget, hit.collider.gameObject.transform.parent);
-                        }
-                        if (Input.GetMouseButtonDown(1) && hit.transform.gameObject.tag == "Buildable") //remove object
-                        {
-                            if (hit.collider.transform.parent != null)
-                                Destroy(hit.collider.transform.parent.gameObject);
-                            else
-                                Destroy(hit.collider.gameObject);
+                            SlotManager.DestroyItem(selectedHotbarSlot, "hotbarSlot");
+                            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadHotbar();
                         }
                     }
-
                 }
                 else
                 {
@@ -161,28 +176,25 @@ public class BuildingManager : MonoBehaviour
 
     void ManageKeys(KeyCode key)
     {
-        if (key == KeyCode.Alpha1)
+        KeyCode[] hotbarKeys = { KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4, KeyCode.Alpha5, KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9, KeyCode.Alpha0 };
+        for (int x = 0; x < hotbarKeys.Length; x++) 
         {
-            Destroy(spawner);
-            spawner = Instantiate(objectBuilders[0]);
-            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
-            spawner.SetActive(false);
+            if (hotbarKeys[x] == key && Inventory.hotbarItems[x] != null && Inventory.hotbarItems[x].buildable) //select hotbar slot
+            {
+                Destroy(spawner);
+                selectedHotbarSlotItemID = Inventory.hotbarItems[x].id;
+                selectedHotbarSlot = x;
+                spawner = Instantiate(Resources.Load<GameObject>("Prefabs/Buildables/" + Inventory.hotbarItems[x].buildablePrefabName));
+                spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
+                spawner.SetActive(false);
+            } else if (spawner.GetComponent<MeshRenderer>() != null && hotbarKeys[x] == key && (Inventory.hotbarItems[x] == null || !Inventory.hotbarItems[x].buildable)) //active hotbar slot is empty
+            {
+                selectedHotbarSlotItemID = -1;
+                selectedHotbarSlot = x;
+                spawner.SetActive(false);
+            }
         }
-        else if (key == KeyCode.Alpha2)
-        {
-            Destroy(spawner);
-            spawner = Instantiate(objectBuilders[1]);
-            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
-            spawner.SetActive(false);
-        }
-        else if (key == KeyCode.Alpha3)
-        {
-            Destroy(spawner);
-            spawner = Instantiate(objectBuilders[2]);
-            spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
-            spawner.SetActive(false);
-        }
-        else if (key == KeyCode.E)
+        if (key == KeyCode.E)
         {
             spawner.transform.Rotate(Vector3.up, 90, 0);
             rotationOffset += 90;
@@ -197,6 +209,16 @@ public class BuildingManager : MonoBehaviour
             if (rotationOffset == -90)
                 rotationOffset = 270;
             spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
+        }
+    }
+
+    void AddRemovedBuildableBackToInventory(string buildableName)
+    {
+        Debug.Log(buildableName);
+        foreach (Item i in Inventory.itemsFromJSON.items)
+        {
+            if (i.buildablePrefabName == buildableName.Split('(')[0].Trim())
+                SlotManager.AddItem(i.id, 1);
         }
     }
 }

@@ -5,14 +5,22 @@
 			"name": "Wooden Pillar",
 			"spriteName": "WoodenPillar01",
 			"prefabName": "WoodenPillar01",
-			"quantity": null
+			"buildablePrefabName": "WoodenPillar01_",
+			"quantity": null,
+			"basicPrice": 1,
+			"buildable": true,
+			"consumable": false
 		},
 		{
 			"id": 2,
 			"name": "Wooden Support Beam",
 			"spriteName": "WoodenSupportBeam01",
 			"prefabName": "WoodenSupportBeam01",
-			"quantity": null
+			"buildablePrefabName": "WoodenSupportBeam01_",
+			"quantity": null,
+			"basicPrice": 1,
+			"buildable": true,
+			"consumable": false
 		}
 	]
 }
