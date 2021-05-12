@@ -1,0 +1,18 @@
+{
+	"items": [
+		{
+			"id": 1,
+			"name": "Wooden Pillar",
+			"spriteName": "WoodenPillar01",
+			"prefabName": "WoodenPillar01",
+			"quantity": null
+		},
+		{
+			"id": 2,
+			"name": "Wooden Support Beam",
+			"spriteName": "WoodenSupportBeam01",
+			"prefabName": "WoodenSupportBeam01",
+			"quantity": null
+		}
+	]
+}

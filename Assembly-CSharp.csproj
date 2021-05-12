@@ -64,15 +64,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\Scripts\BuildingManager.cs" />
     <Compile Include="Assets\Scripts\CameraMovement.cs" />
-    <Compile Include="Assets\Scripts\Inventory.cs" />
-    <Compile Include="Assets\Scripts\ItemGrabber.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\BuildingManager.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\Inventory.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\Item.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\ItemGrabber.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\RaycastChecker.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\RotationChecker.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\SlotManager.cs" />
     <Compile Include="Assets\Scripts\PlayerFollower.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
-    <Compile Include="Assets\Scripts\RaycastChecker.cs" />
-    <Compile Include="Assets\Scripts\RotationChecker.cs" />
-    <Compile Include="Assets\Scripts\SlotManager.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/Projekty Unity/SandboxGame/SandboxGame/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>
