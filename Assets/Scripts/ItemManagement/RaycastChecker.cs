@@ -32,7 +32,7 @@ public class RaycastChecker : MonoBehaviour
         {
             if (result.gameObject.tag == "Slot")
             {
-                result.gameObject.GetComponent<SlotManager>().ManageMouseInput(result.gameObject.name);
+                result.gameObject.transform.parent.GetComponent<SlotManager>().ManageMouseInput(result.gameObject.transform.parent.name);
             }
         }
     }

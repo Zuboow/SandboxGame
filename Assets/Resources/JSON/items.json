@@ -21,6 +21,17 @@
 			"basicPrice": 1,
 			"buildable": true,
 			"consumable": false
+		},
+		{
+			"id": 20,
+			"name": "Wooden Log",
+			"spriteName": "WoodenLog01",
+			"prefabName": "WoodenLog01",
+			"buildablePrefabName": "",
+			"quantity": null,
+			"basicPrice": 1,
+			"buildable": false,
+			"consumable": false
 		}
 	]
 }

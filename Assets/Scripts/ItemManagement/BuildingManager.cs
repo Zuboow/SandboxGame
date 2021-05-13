@@ -40,9 +40,15 @@ public class BuildingManager : MonoBehaviour
             {
                 if (selectedHotbarSlot != -1 && Inventory.hotbarItems[selectedHotbarSlot] != null && Inventory.hotbarItems[selectedHotbarSlot].id != selectedHotbarSlotItemID) //check if items have been replaced while in building mode
                 {
-                    Destroy(spawner);
-                    spawner = Instantiate(Resources.Load<GameObject>("Prefabs/Buildables/" + Inventory.hotbarItems[selectedHotbarSlot].buildablePrefabName));
-                    spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
+                    if (Inventory.hotbarItems[selectedHotbarSlot].buildable == true)
+                    {
+                        Destroy(spawner);
+                        spawner = Instantiate(Resources.Load<GameObject>("Prefabs/Buildables/" + Inventory.hotbarItems[selectedHotbarSlot].buildablePrefabName));
+                        spawner.transform.Find("collider").GetComponent<RotationChecker>().offset = rotationOffset;
+                    } else
+                    {
+                        spawner.SetActive(false);
+                    }
                 }
                 if (!Inventory.inventoryOpened) //remove object
                 {

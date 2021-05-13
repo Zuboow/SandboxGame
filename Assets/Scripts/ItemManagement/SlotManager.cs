@@ -88,7 +88,9 @@ public class SlotManager : MonoBehaviour
             case "slot":
                 if (Inventory.items[slotID] != null)
                 {
-                    Instantiate(Resources.Load<GameObject>("Prefabs/ObjectsDropped/" + Inventory.items[slotID].prefabName), GameObject.FindGameObjectWithTag("Player").transform.position + new Vector3(0f, 0.5f, 0f), Quaternion.identity);
+                    GameObject removedItem = new GameObject();
+                    removedItem = Instantiate(Resources.Load<GameObject>("Prefabs/ObjectsDropped/" + Inventory.items[slotID].prefabName), GameObject.FindGameObjectWithTag("Player").transform.position + Camera.main.transform.forward * 0.2f, Quaternion.identity);
+                    removedItem.GetComponent<Rigidbody>().AddForce(Camera.main.transform.forward * 160f);
                     Inventory.items[slotID] = null;
                     cameraObject.GetComponent<Inventory>().ReloadInventory();
                 }
@@ -96,7 +98,9 @@ public class SlotManager : MonoBehaviour
             case "hotbarSlot":
                 if (Inventory.hotbarItems[slotID] != null)
                 {
-                    Instantiate(Resources.Load<GameObject>("Prefabs/ObjectsDropped/" + Inventory.hotbarItems[slotID].prefabName), GameObject.FindGameObjectWithTag("Player").transform.position + new Vector3(0f, 0.5f, 0f), Quaternion.identity);
+                    GameObject removedItem = new GameObject();
+                    removedItem = Instantiate(Resources.Load<GameObject>("Prefabs/ObjectsDropped/" + Inventory.hotbarItems[slotID].prefabName), GameObject.FindGameObjectWithTag("Player").transform.position + Camera.main.transform.forward * 0.2f, Quaternion.identity);
+                    removedItem.GetComponent<Rigidbody>().AddForce(Camera.main.transform.forward * 160f);
                     Inventory.hotbarItems[slotID] = null;
                     cameraObject.GetComponent<Inventory>().ReloadInventory();
                 }
@@ -117,6 +121,8 @@ public class SlotManager : MonoBehaviour
                     transform.SetAsLastSibling();
                     grabbedItemSlotID = slotID;
                     grabbedItemSlotInHotbar = false;
+                    Debug.Log("Biorę");
+
                 }
                 break;
             case "hotbarSlot":
@@ -126,6 +132,8 @@ public class SlotManager : MonoBehaviour
                     transform.SetAsLastSibling();
                     grabbedItemSlotID = slotID;
                     grabbedItemSlotInHotbar = true;
+                    Debug.Log("Biorę");
+
                 }
                 break;
         }
@@ -139,6 +147,7 @@ public class SlotManager : MonoBehaviour
 
     void ManageMovingObjects(int selectedItemSlotID, string slotType)
     {
+        Debug.Log("Stawiam");
         Item originalItemFromSelectedSlot = slotType == "hotbarSlot" ? Inventory.hotbarItems[selectedItemSlotID] : Inventory.items[selectedItemSlotID];
         if (slotType == "slot")
         {
