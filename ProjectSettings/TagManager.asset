@@ -8,6 +8,8 @@ TagManager:
   - Buildable
   - Anchor
   - NoRotation
+  - Slot
+  - Destroyable
   layers:
   - Default
   - TransparentFX

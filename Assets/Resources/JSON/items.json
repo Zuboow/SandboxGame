@@ -1,0 +1,37 @@
+{
+	"items": [
+		{
+			"id": 1,
+			"name": "Wooden Pillar",
+			"spriteName": "WoodenPillar01",
+			"prefabName": "WoodenPillar01",
+			"buildablePrefabName": "WoodenPillar01_",
+			"quantity": null,
+			"basicPrice": 1,
+			"buildable": true,
+			"consumable": false
+		},
+		{
+			"id": 2,
+			"name": "Wooden Support Beam",
+			"spriteName": "WoodenSupportBeam01",
+			"prefabName": "WoodenSupportBeam01",
+			"buildablePrefabName": "WoodenSupportBeam01_",
+			"quantity": null,
+			"basicPrice": 1,
+			"buildable": true,
+			"consumable": false
+		},
+		{
+			"id": 20,
+			"name": "Wooden Log",
+			"spriteName": "WoodenLog01",
+			"prefabName": "WoodenLog01",
+			"buildablePrefabName": "",
+			"quantity": null,
+			"basicPrice": 1,
+			"buildable": false,
+			"consumable": false
+		}
+	]
+}
