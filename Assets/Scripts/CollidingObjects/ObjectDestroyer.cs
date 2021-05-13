@@ -10,7 +10,7 @@ public class ObjectDestroyer : MonoBehaviour
         RaycastHit hit;
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
-        if (Physics.Raycast(ray, out hit) && !Inventory.inventoryOpened && Input.GetMouseButtonDown(0))
+        if (Physics.Raycast(ray, out hit) && !Inventory.inventoryOpened && Input.GetMouseButtonDown(0) && !BuildingManager.buildingMode)
         {
             if (hit.transform.gameObject.tag == "Destroyable" && Vector3.Distance(hit.point, transform.position) < 2f)
             {

@@ -6,14 +6,14 @@ public class ItemGrabber : MonoBehaviour
 {
     void OnMouseOver()
     {
-        if (Input.GetMouseButtonDown(0) && !Inventory.inventoryOpened)
+        if (Input.GetKeyDown(KeyCode.E) && !Inventory.inventoryOpened)
         {
             foreach (Item i in Inventory.itemsFromJSON.items)
             {
                 if (name.Split('(')[0].Trim() == i.spriteName)
                 {
-                    SlotManager.AddItem(i.id, 1);
-                    Destroy(gameObject);
+                    if (SlotManager.AddItem(i.id, 1))
+                        Destroy(gameObject);
                 }
             }
         }
