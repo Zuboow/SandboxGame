@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ObjectDestroyer : MonoBehaviour
 {
+    public GameObject particleSpawner;
     void Update()
     {
         RaycastHit hit;
@@ -13,10 +14,13 @@ public class ObjectDestroyer : MonoBehaviour
         {
             if (hit.transform.gameObject.tag == "Destroyable" && Vector3.Distance(hit.point, transform.position) < 2f)
             {
-                if (hit.transform.gameObject.GetComponent<ItemDropper>().DropItems() == true)
+                GameObject particles;
+                particles = Instantiate(particleSpawner, hit.point, Quaternion.identity);
+                particles.GetComponent<ParticleSystem>().Play();
+                if (hit.transform.gameObject.GetComponent<EntityHealthManager>().DamageEntity(5)) //constant damage for testing purposes
                 {
+                    hit.transform.gameObject.GetComponent<ItemDropper>().DropItems();
                     Destroy(hit.transform.gameObject);
-                    Debug.Log("Items dropped");
                 }
             }
         }

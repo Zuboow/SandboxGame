@@ -10,7 +10,6 @@ public class ItemGrabber : MonoBehaviour
         {
             foreach (Item i in Inventory.itemsFromJSON.items)
             {
-                Debug.Log(name.Split('(')[0].Trim());
                 if (name.Split('(')[0].Trim() == i.spriteName)
                 {
                     SlotManager.AddItem(i.id, 1);

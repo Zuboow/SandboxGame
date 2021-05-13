@@ -65,12 +65,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\CameraMovement.cs" />
+    <Compile Include="Assets\Scripts\CollidingObjects\EntityHealthManager.cs" />
+    <Compile Include="Assets\Scripts\CollidingObjects\ObjectDestroyer.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\BuildingManager.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\Inventory.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\Item.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\ItemDropper.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\ItemGrabber.cs" />
-    <Compile Include="Assets\Scripts\ItemManagement\ObjectDestroyer.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\RaycastChecker.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\RotationChecker.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\SlotManager.cs" />
