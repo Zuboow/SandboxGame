@@ -68,6 +68,9 @@
     <Compile Include="Assets\Scripts\CollidingObjects\EntityHealthManager.cs" />
     <Compile Include="Assets\Scripts\CollidingObjects\ObjectDestroyer.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\BuildingManager.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\Crafting\CraftingList.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\Crafting\CraftingSlotManager.cs" />
+    <Compile Include="Assets\Scripts\ItemManagement\Crafting\Recipe.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\Inventory.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\Item.cs" />
     <Compile Include="Assets\Scripts\ItemManagement\ItemDropper.cs" />

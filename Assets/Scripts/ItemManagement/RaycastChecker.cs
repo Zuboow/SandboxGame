@@ -34,6 +34,10 @@ public class RaycastChecker : MonoBehaviour
             {
                 result.gameObject.transform.parent.GetComponent<SlotManager>().ManageMouseInput(result.gameObject.transform.parent.name);
             }
+            else if (result.gameObject.tag == "CraftingSlot")
+            {
+                result.gameObject.transform.GetComponent<CraftingSlotManager>().StartCraftingProccess();
+            }
         }
     }
 }

@@ -1,0 +1,10 @@
+﻿{
+	"recipes": [
+		{
+			"id": 1,
+			"name": "Wooden Plank",
+			"itemIds": [ 20, 20 ],
+			"resultId":  1
+		}
+	]
+}
