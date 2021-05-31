@@ -30,7 +30,7 @@ public class SlotManager : MonoBehaviour
         }
     }
 
-    public void ManageMouseInput(string name)
+    public void ManageInput(string name)
     {
         if (Input.GetMouseButtonDown(1) && grabbedItemSlotID == -1)
         {
@@ -43,6 +43,10 @@ public class SlotManager : MonoBehaviour
         else if (Input.GetMouseButtonDown(0) && grabbedItemSlotID != -1)
         {
             ManageMovingObjects(Int32.Parse(name.Split('_')[1]), name.Split('_')[0]);
+        }
+        if (Input.GetKeyDown(KeyCode.E) && grabbedItemSlotID == -1)
+        {
+            UseItem(Int32.Parse(name.Split('_')[1]), name.Split('_')[0]);
         }
     }
 
@@ -66,6 +70,27 @@ public class SlotManager : MonoBehaviour
             }
         }
         return false;
+    }
+
+    public static void UseItem(int slotID, string slotType)
+    {
+        switch (slotType)
+        {
+            case "slot":
+                if (Inventory.items[slotID] != null && Inventory.items[slotID].consumable && cameraObject.GetComponent<EatingManager>().ConsumeItem(Inventory.items[slotID].id))
+                {
+                    Inventory.items[slotID] = null;
+                    cameraObject.GetComponent<Inventory>().ReloadInventory();
+                }
+                break;
+            case "hotbarSlot":
+                if (Inventory.hotbarItems[slotID] != null && Inventory.hotbarItems[slotID].consumable && cameraObject.GetComponent<EatingManager>().ConsumeItem(Inventory.hotbarItems[slotID].id))
+                {
+                    Inventory.hotbarItems[slotID] = null;
+                    cameraObject.GetComponent<Inventory>().ReloadInventory();
+                }
+                break;
+        }
     }
 
     public static void DestroyItem(int slotID, string slotType)
@@ -107,7 +132,7 @@ public class SlotManager : MonoBehaviour
                 break;
         }
 
-        
+
     }
 
     void GrabItem(int slotID, string slotType)

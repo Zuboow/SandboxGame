@@ -38,4 +38,18 @@ public class HealthManager : MonoBehaviour
             healthBar.GetComponent<Slider>().value = healthPointsPercentage;
         }
     }
+
+    public void HealPlayer(int healing)
+    {
+        if (healthPointsPercentage + healing > 100)
+        {
+            healthPointsPercentage = 100;
+            healthBar.GetComponent<Slider>().value = healthPointsPercentage;
+        }
+        else
+        {
+            healthPointsPercentage += healing;
+            healthBar.GetComponent<Slider>().value = healthPointsPercentage;
+        }
+    }
 }

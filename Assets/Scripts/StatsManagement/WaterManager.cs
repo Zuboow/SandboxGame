@@ -16,7 +16,6 @@ public class WaterManager : MonoBehaviour
         if (currentTime - lastWaterUpdate > waterUpdateTime)
         {
             IncreaseThirst(waterLossOverTime);
-            lastWaterUpdate = currentTime;
         }
     }
 
@@ -30,6 +29,21 @@ public class WaterManager : MonoBehaviour
         else
         {
             waterPointsPercentage -= amount;
+            waterBar.GetComponent<Slider>().value = waterPointsPercentage;
+        }
+        lastWaterUpdate = currentTime;
+    }
+
+    public void ReplenishWater(int amount)
+    {
+        if (waterPointsPercentage + amount > 100)
+        {
+            waterPointsPercentage = 100;
+            waterBar.GetComponent<Slider>().value = waterPointsPercentage;
+        }
+        else
+        {
+            waterPointsPercentage += amount;
             waterBar.GetComponent<Slider>().value = waterPointsPercentage;
         }
     }

@@ -16,7 +16,6 @@ public class HungerManager : MonoBehaviour
         if (currentTime - lastHungerUpdate > hungerUpdateTime)
         {
             IncreaseHunger(hungerLossOverTime);
-            lastHungerUpdate = currentTime;
         }
     }
 
@@ -30,6 +29,21 @@ public class HungerManager : MonoBehaviour
         else
         {
             hungerPointsPercentage -= amount;
+            hungerBar.GetComponent<Slider>().value = hungerPointsPercentage;
+        }
+        lastHungerUpdate = currentTime;
+    }
+
+    public void ReplenishHunger(int amount)
+    {
+        if (hungerPointsPercentage + amount > 100)
+        {
+            hungerPointsPercentage = 100;
+            hungerBar.GetComponent<Slider>().value = hungerPointsPercentage;
+        }
+        else
+        {
+            hungerPointsPercentage += amount;
             hungerBar.GetComponent<Slider>().value = hungerPointsPercentage;
         }
     }

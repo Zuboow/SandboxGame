@@ -80,6 +80,8 @@
     <Compile Include="Assets\Scripts\ItemManagement\SlotManager.cs" />
     <Compile Include="Assets\Scripts\PlayerFollower.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
+    <Compile Include="Assets\Scripts\StatsManagement\Consumable.cs" />
+    <Compile Include="Assets\Scripts\StatsManagement\EatingManager.cs" />
     <Compile Include="Assets\Scripts\StatsManagement\HealthManager.cs" />
     <Compile Include="Assets\Scripts\StatsManagement\HungerManager.cs" />
     <Compile Include="Assets\Scripts\StatsManagement\WaterManager.cs" />

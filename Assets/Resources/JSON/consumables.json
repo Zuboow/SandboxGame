@@ -1,0 +1,20 @@
+﻿{
+	"consumables": [
+		{
+			"id": 50,
+			"name": "Apple",
+			"foodPercentage": 8,
+			"waterPercentage": 3,
+			"healthPercentage": 0,
+			"consumableType": "Fruit"
+		},
+		{
+			"id": 70,
+			"name": "HealthPotion",
+			"foodPercentage": 0,
+			"waterPercentage": 0,
+			"healthPercentage": 25,
+			"consumableType": "Drink"
+		}
+	]
+}

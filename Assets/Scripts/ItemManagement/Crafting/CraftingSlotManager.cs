@@ -76,7 +76,7 @@ public class CraftingSlotManager : MonoBehaviour
             {
                 Inventory.hotbarItems[slotId] = null;
             }
-            SlotManager.AddItem(recipe.resultId, 1);
+            SlotManager.AddItem(recipe.id, 1);
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadInventory();
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadHotbar();
         }

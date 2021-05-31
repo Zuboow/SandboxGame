@@ -22,14 +22,13 @@ public class CraftingList : MonoBehaviour
 
     private void FixedUpdate()
     {
-        //
-        if (Inventory.itemsFromJSON != null && craftingOptions[0] == null)
+        //testing
+        if (Inventory.itemsFromJSON != null && craftingOptions[0] == null && craftingOptions[4] == null)
         {
-            Item testItem = Inventory.itemsFromJSON.items[0];
-            craftingOptions[0] = testItem;
-            //craftingOptions[0] = new Item(testItem.id, testItem.name, testItem.spriteName, testItem.prefabName, testItem.buildablePrefabName, testItem.quantity, testItem.basicPrice, testItem.buildable, testItem.consumable);
+            craftingOptions[0] = Inventory.itemsFromJSON.items[0];
+            craftingOptions[1] = Inventory.itemsFromJSON.items[4];
         }
-        //test
+        //
 
         if (Inventory.inventoryOpened)
         {
