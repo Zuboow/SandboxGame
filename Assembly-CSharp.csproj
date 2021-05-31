@@ -80,6 +80,10 @@
     <Compile Include="Assets\Scripts\ItemManagement\SlotManager.cs" />
     <Compile Include="Assets\Scripts\PlayerFollower.cs" />
     <Compile Include="Assets\Scripts\PlayerMovement.cs" />
+    <Compile Include="Assets\Scripts\StatsManagement\HealthManager.cs" />
+    <Compile Include="Assets\Scripts\StatsManagement\HungerManager.cs" />
+    <Compile Include="Assets\Scripts\StatsManagement\WaterManager.cs" />
+    <Compile Include="Assets\Scripts\UIManagement\UIVisibilityManager.cs" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>D:/Projekty Unity/SandboxGame/SandboxGame/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

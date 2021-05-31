@@ -19,10 +19,15 @@ public class BuildingManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.B) && HealthManager.playerAlive)
         {
             buildingMode = !buildingMode;
             buildingIcon.SetActive(buildingMode);
+        }
+        if (!HealthManager.playerAlive)
+        {
+            buildingMode = false;
+            buildingIcon.SetActive(false);
         }
 
         if (buildingMode)

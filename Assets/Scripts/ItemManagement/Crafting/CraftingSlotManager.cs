@@ -15,7 +15,7 @@ public class CraftingSlotManager : MonoBehaviour
     }
     public void StartCraftingProccess()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && HealthManager.playerAlive)
         {
             int checkedCraftingListIndex = Int32.Parse(name.Split('_')[1]);
 

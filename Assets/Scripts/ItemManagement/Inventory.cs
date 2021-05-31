@@ -33,7 +33,7 @@ public class Inventory : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.I) && HealthManager.playerAlive)
         {
             switch (inventoryOpened)
             {
@@ -46,6 +46,12 @@ public class Inventory : MonoBehaviour
                     Cursor.lockState = CursorLockMode.None;
                     break;
             }
+        }
+        if (!HealthManager.playerAlive)
+        {
+            CloseInventory();
+            CloseHotbar();
+            Cursor.lockState = CursorLockMode.Locked;
         }
     }
 

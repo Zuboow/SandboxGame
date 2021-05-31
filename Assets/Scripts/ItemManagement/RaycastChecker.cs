@@ -18,7 +18,7 @@ public class RaycastChecker : MonoBehaviour
 
     void Update()
     {
-        if (Inventory.inventoryOpened)
+        if (Inventory.inventoryOpened && HealthManager.playerAlive)
             CheckRaycastHits();
     }
 

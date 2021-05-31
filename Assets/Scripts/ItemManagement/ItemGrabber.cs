@@ -6,7 +6,7 @@ public class ItemGrabber : MonoBehaviour
 {
     void OnMouseOver()
     {
-        if (Input.GetKeyDown(KeyCode.E) && !Inventory.inventoryOpened)
+        if (Input.GetKeyDown(KeyCode.E) && !Inventory.inventoryOpened && HealthManager.playerAlive)
         {
             foreach (Item i in Inventory.itemsFromJSON.items)
             {
