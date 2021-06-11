@@ -13,7 +13,10 @@ public class ItemGrabber : MonoBehaviour
                 if (name.Split('(')[0].Trim() == i.spriteName)
                 {
                     if (SlotManager.AddItem(i.id, 1) == 0)
+                    {
+                        GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadHotbar();
                         Destroy(gameObject);
+                    }
                 }
             }
         }

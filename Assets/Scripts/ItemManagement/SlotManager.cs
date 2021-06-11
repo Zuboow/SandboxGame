@@ -296,12 +296,20 @@ public class SlotManager : MonoBehaviour
             if (slotType == "slot")
             {
                 Inventory.items[selectedItemSlotID] = grabbedItemSlotInHotbar ? Inventory.hotbarItems[grabbedItemSlotID] : Inventory.items[grabbedItemSlotID];
+                if (!grabbedItemSlotInHotbar)
+                    Inventory.items[grabbedItemSlotID] = originalItemFromSelectedSlot;
+                else
+                    Inventory.hotbarItems[grabbedItemSlotID] = originalItemFromSelectedSlot;
             }
             else
             {
                 Inventory.hotbarItems[selectedItemSlotID] = grabbedItemSlotInHotbar ? Inventory.hotbarItems[grabbedItemSlotID] : Inventory.items[grabbedItemSlotID];
+                if (!grabbedItemSlotInHotbar)
+                    Inventory.items[grabbedItemSlotID] = originalItemFromSelectedSlot;
+                else
+                    Inventory.hotbarItems[grabbedItemSlotID] = originalItemFromSelectedSlot;
             }
-            replaceItems = true;
+            replaceItems = false;
         }
 
 
