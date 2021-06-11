@@ -55,7 +55,30 @@ public class SlotManager : MonoBehaviour
     public static int AddItem(int id, int quantityAdded)
     {
         int quantityLeft = quantityAdded;
-        foreach (KeyValuePair<int, Item> key in Inventory.items)
+        quantityLeft = TryToFillStacksWithItem(Inventory.items, id, quantityLeft);
+
+        if (quantityLeft > 0)
+            quantityLeft = TryToFillStacksWithItem(Inventory.hotbarItems, id, quantityLeft);
+        Debug.Log("After TryToFillStackWithItem on hotbar: " + quantityLeft);
+
+        if (quantityLeft > 0)
+            quantityLeft = TryToAddItemInSpecificQuantity(Inventory.items, id, quantityLeft);
+        Debug.Log("After TryToAddItemInSpecificQuantity on inv: " + quantityLeft);
+
+        if (quantityLeft > 0)
+            quantityLeft = TryToAddItemInSpecificQuantity(Inventory.hotbarItems, id, quantityLeft);
+        Debug.Log("After TryToAddItemInSpecificQuantity on hotbar: " + quantityLeft);
+
+
+        if (quantityLeft != quantityAdded && Inventory.inventoryOpened)
+            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadInventory();
+
+        return quantityLeft;
+    }
+
+    static int TryToFillStacksWithItem(Dictionary<int, Item> itemList, int id, int quantityLeft)
+    {
+        foreach (KeyValuePair<int, Item> key in itemList)
         {
             if (key.Value != null)
             {
@@ -65,34 +88,36 @@ public class SlotManager : MonoBehaviour
                     {
                         quantityLeft -= quantityLimitPerSlot - key.Value.quantity;
                         key.Value.quantity = quantityLimitPerSlot;
-                    } else
+                    }
+                    else
                     {
                         key.Value.quantity += quantityLeft;
-                        quantityLeft = 0;
+                        return 0;
                     }
                 }
             }
         }
+        return quantityLeft;
+    }
 
-        if (quantityLeft > 0)
+    static int TryToAddItemInSpecificQuantity(Dictionary<int, Item> itemList, int id, int quantityLeft)
+    {
+        foreach (KeyValuePair<int, Item> key in itemList.ToList())
         {
-            foreach (KeyValuePair<int, Item> key in Inventory.items.ToList())
+            if (key.Value == null)
             {
-                if (key.Value == null && quantityLeft > 0)
+                foreach (Item i in Inventory.itemsFromJSON.items)
                 {
-                    foreach (Item i in Inventory.itemsFromJSON.items)
+                    if (id == i.id)
                     {
-                        if (id == i.id)
-                        {
-                            Inventory.items[key.Key] = new Item(id, i.name, i.spriteName, i.prefabName, i.buildablePrefabName, quantityLeft <= quantityLimitPerSlot ? quantityLeft : quantityLimitPerSlot, i.basicPrice, i.buildable, i.consumable);
-                            quantityLeft = quantityLeft <= quantityLimitPerSlot ? 0 : quantityLeft - quantityLimitPerSlot;
-                        }
+                        itemList[key.Key] = new Item(id, i.name, i.spriteName, i.prefabName, i.buildablePrefabName, quantityLeft <= quantityLimitPerSlot ? quantityLeft : quantityLimitPerSlot, i.basicPrice, i.buildable, i.consumable);
+                        quantityLeft = quantityLeft <= quantityLimitPerSlot ? 0 : quantityLeft - quantityLimitPerSlot;
+                        if (quantityLeft <= 0)
+                            return 0;
                     }
                 }
             }
         }
-        if (quantityLeft != quantityAdded && Inventory.inventoryOpened)
-            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadInventory();
         return quantityLeft;
     }
 
