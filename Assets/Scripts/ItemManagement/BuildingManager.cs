@@ -19,10 +19,15 @@ public class BuildingManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
+        if (Input.GetKeyDown(KeyCode.B) && HealthManager.playerAlive)
         {
             buildingMode = !buildingMode;
             buildingIcon.SetActive(buildingMode);
+        }
+        if (!HealthManager.playerAlive)
+        {
+            buildingMode = false;
+            buildingIcon.SetActive(false);
         }
 
         if (buildingMode)
@@ -142,7 +147,7 @@ public class BuildingManager : MonoBehaviour
                         if (Input.GetMouseButtonDown(0) && spawner.GetComponent<MeshRenderer>() != null)
                         {
                             BuildObject(buildingTarget, hit.collider.gameObject.transform.parent);
-                            SlotManager.DestroyItem(selectedHotbarSlot, "hotbarSlot");
+                            SlotManager.DestroyItem(selectedHotbarSlot, "hotbarSlot", 1);
                             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadHotbar();
                         }
                     }
@@ -227,7 +232,7 @@ public class BuildingManager : MonoBehaviour
         {
             if (i.buildablePrefabName == buildableName.Split('(')[0].Trim())
             {
-                if (SlotManager.AddItem(i.id, 1))
+                if (SlotManager.AddItem(i.id, 1) == 0)
                     return true;
                 else
                 {

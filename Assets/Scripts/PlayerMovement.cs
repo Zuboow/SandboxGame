@@ -17,7 +17,7 @@ public class PlayerMovement : MonoBehaviour
         float yAxis = Input.GetAxis("Vertical");
         float xAxis = Input.GetAxis("Horizontal");
 
-        if (yAxis != 0 || xAxis != 0)
+        if ((yAxis != 0 || xAxis != 0) && HealthManager.playerAlive)
         {
             Vector3 direction = Camera.main.transform.forward * yAxis + Camera.main.transform.right * xAxis;
             //transform.position = Vector3.MoveTowards(transform.position ,transform.position + direction, speed * 0.2f);

@@ -18,7 +18,7 @@ public class RaycastChecker : MonoBehaviour
 
     void Update()
     {
-        if (Inventory.inventoryOpened)
+        if (Inventory.inventoryOpened && HealthManager.playerAlive)
             CheckRaycastHits();
     }
 
@@ -32,7 +32,11 @@ public class RaycastChecker : MonoBehaviour
         {
             if (result.gameObject.tag == "Slot")
             {
-                result.gameObject.transform.parent.GetComponent<SlotManager>().ManageMouseInput(result.gameObject.transform.parent.name);
+                result.gameObject.transform.parent.GetComponent<SlotManager>().ManageInput(result.gameObject.transform.parent.name);
+            }
+            else if (result.gameObject.tag == "CraftingSlot")
+            {
+                result.gameObject.transform.GetComponent<CraftingSlotManager>().StartCraftingProccess();
             }
         }
     }

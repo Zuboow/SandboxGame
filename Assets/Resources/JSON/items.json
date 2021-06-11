@@ -31,7 +31,51 @@
 			"quantity": null,
 			"basicPrice": 1,
 			"buildable": false,
+			"consumable": true
+		},
+		{
+			"id": 22,
+			"name": "Leaf",
+			"spriteName": "Leaf",
+			"prefabName": "Leaf",
+			"buildablePrefabName": "",
+			"quantity": null,
+			"basicPrice": 1,
+			"buildable": false,
 			"consumable": false
+		},
+		{
+			"id": 24,
+			"name": "Rock",
+			"spriteName": "Rock",
+			"prefabName": "Rock",
+			"buildablePrefabName": "",
+			"quantity": null,
+			"basicPrice": 1,
+			"buildable": false,
+			"consumable": false
+		},
+		{
+			"id": 50,
+			"name": "Apple",
+			"spriteName": "Apple",
+			"prefabName": "Apple",
+			"buildablePrefabName": "",
+			"quantity": null,
+			"basicPrice": 3,
+			"buildable": false,
+			"consumable": true
+		},
+		{
+			"id": 70,
+			"name": "Health Potion",
+			"spriteName": "HealthPotion",
+			"prefabName": "HealthPotion",
+			"buildablePrefabName": "",
+			"quantity": null,
+			"basicPrice": 10,
+			"buildable": false,
+			"consumable": true
 		}
 	]
 }

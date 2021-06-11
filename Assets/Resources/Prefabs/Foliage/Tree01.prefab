@@ -106,7 +106,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34b3c82aaa5da46419ee3dd107d58a22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  droppedItems: 140000001400000014000000
+  droppedItems: 1400000014000000140000003200000032000000
 --- !u!64 &4831754318970831089
 MeshCollider:
   m_ObjectHideFlags: 0
