@@ -15,6 +15,14 @@
 			"waterPercentage": 0,
 			"healthPercentage": 25,
 			"consumableType": "Drink"
+		},
+		{
+			"id": 20,
+			"name": "WoodenLog",
+			"foodPercentage": 0,
+			"waterPercentage": 0,
+			"healthPercentage": -99,
+			"consumableType": "Beaver's Dream"
 		}
 	]
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -74,7 +75,7 @@ public class Inventory : MonoBehaviour
             spawnedHotbarSlots.Add(spawnedSlot);
             if (hotbarItems[slotNumber] != null)
             {
-                SpawnObjectInSlot(spawnedSlot, hotbarItems[slotNumber].spriteName);
+                SpawnObjectInSlot(spawnedSlot, hotbarItems[slotNumber].spriteName, hotbarItems[slotNumber].quantity);
             }
             offsetHorizontal += offsetX;
             slotNumber++;
@@ -97,7 +98,7 @@ public class Inventory : MonoBehaviour
                 spawnedSlots.Add(spawnedSlot);
                 if (items[slotNumber] != null)
                 {
-                    SpawnObjectInSlot(spawnedSlot, items[slotNumber].spriteName);
+                    SpawnObjectInSlot(spawnedSlot, items[slotNumber].spriteName, items[slotNumber].quantity);
                 }
                 offsetHorizontal += offsetX;
                 slotNumber++;
@@ -143,11 +144,14 @@ public class Inventory : MonoBehaviour
         OpenHotbar();
     }
 
-    public void SpawnObjectInSlot(GameObject parent, string spriteName)
+    public void SpawnObjectInSlot(GameObject parent, string spriteName, int quantity)
     {
         spriteSpawner.SetActive(true);
         spriteSpawner.GetComponent<Image>().sprite = Resources.Load<Sprite>("Prefabs/InventoryItemSprites/" + spriteName);
+        parent.transform.Find("Quantity").GetComponent<TextMeshProUGUI>().text = quantity <= 1 ? "" : quantity.ToString();
+        parent.transform.Find("Quantity").gameObject.transform.SetAsLastSibling();
         Instantiate(spriteSpawner, parent.transform, false);
+        parent.transform.Find("spriteSpawner(Clone)").gameObject.transform.SetSiblingIndex(1);
         spriteSpawner.SetActive(false);
     }
 }

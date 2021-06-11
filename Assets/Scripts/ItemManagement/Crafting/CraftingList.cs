@@ -26,7 +26,7 @@ public class CraftingList : MonoBehaviour
         if (Inventory.itemsFromJSON != null && craftingOptions[0] == null && craftingOptions[4] == null)
         {
             craftingOptions[0] = Inventory.itemsFromJSON.items[0];
-            craftingOptions[1] = Inventory.itemsFromJSON.items[4];
+            craftingOptions[1] = Inventory.itemsFromJSON.items[6];
         }
         //
 

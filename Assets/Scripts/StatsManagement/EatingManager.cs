@@ -18,9 +18,18 @@ public class EatingManager : MonoBehaviour
         {
             if (consumable.id == id)
             {
-                barInterface.GetComponent<HungerManager>().ReplenishHunger(consumable.foodPercentage);
-                barInterface.GetComponent<WaterManager>().ReplenishWater(consumable.waterPercentage);
-                barInterface.GetComponent<HealthManager>().HealPlayer(consumable.healthPercentage);
+                if (consumable.foodPercentage > 0)
+                    barInterface.GetComponent<HungerManager>().ReplenishHunger(consumable.foodPercentage);
+                else
+                    barInterface.GetComponent<HungerManager>().IncreaseHunger(-consumable.foodPercentage);
+                if (consumable.waterPercentage > 0)
+                    barInterface.GetComponent<WaterManager>().ReplenishWater(consumable.waterPercentage);
+                else
+                    barInterface.GetComponent<WaterManager>().IncreaseThirst(-consumable.waterPercentage);
+                if (consumable.healthPercentage > 0)
+                    barInterface.GetComponent<HealthManager>().HealPlayer(consumable.healthPercentage);
+                else
+                    barInterface.GetComponent<HealthManager>().HurtPlayer(-consumable.healthPercentage);
                 return true;
             }
         }

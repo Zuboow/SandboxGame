@@ -147,7 +147,7 @@ public class BuildingManager : MonoBehaviour
                         if (Input.GetMouseButtonDown(0) && spawner.GetComponent<MeshRenderer>() != null)
                         {
                             BuildObject(buildingTarget, hit.collider.gameObject.transform.parent);
-                            SlotManager.DestroyItem(selectedHotbarSlot, "hotbarSlot");
+                            SlotManager.DestroyItem(selectedHotbarSlot, "hotbarSlot", 1);
                             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadHotbar();
                         }
                     }

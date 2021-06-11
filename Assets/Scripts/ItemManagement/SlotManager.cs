@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -54,13 +55,17 @@ public class SlotManager : MonoBehaviour
     {
         foreach (KeyValuePair<int, Item> key in Inventory.items)
         {
-            if (key.Value == null)
+            if (key.Value == null || (key.Value.id == id && key.Value.quantity < 10))
             {
                 foreach (Item i in Inventory.itemsFromJSON.items)
                 {
                     if (id == i.id)
                     {
-                        Inventory.items[key.Key] = new Item(id, i.name, i.spriteName, i.prefabName, i.buildablePrefabName, quantityAdded, i.basicPrice, i.buildable, i.consumable);
+                        if (key.Value != null && key.Value.id == id && key.Value.quantity < 10) //tested limit
+                            Inventory.items[key.Key].quantity += quantityAdded;
+                        //needed case when adding custom quantity will make one slot full - should add remaining quantity to another free slot
+                        else
+                            Inventory.items[key.Key] = new Item(id, i.name, i.spriteName, i.prefabName, i.buildablePrefabName, quantityAdded, i.basicPrice, i.buildable, i.consumable);
                         if (Inventory.inventoryOpened)
                             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadInventory();
 
@@ -79,29 +84,41 @@ public class SlotManager : MonoBehaviour
             case "slot":
                 if (Inventory.items[slotID] != null && Inventory.items[slotID].consumable && cameraObject.GetComponent<EatingManager>().ConsumeItem(Inventory.items[slotID].id))
                 {
-                    Inventory.items[slotID] = null;
+                    if (Inventory.items[slotID].quantity - 1 == 0)
+                        Inventory.items[slotID] = null;
+                    else
+                        Inventory.items[slotID].quantity -= 1;
                     cameraObject.GetComponent<Inventory>().ReloadInventory();
                 }
                 break;
             case "hotbarSlot":
                 if (Inventory.hotbarItems[slotID] != null && Inventory.hotbarItems[slotID].consumable && cameraObject.GetComponent<EatingManager>().ConsumeItem(Inventory.hotbarItems[slotID].id))
                 {
-                    Inventory.hotbarItems[slotID] = null;
+                    if (Inventory.hotbarItems[slotID].quantity - 1 == 0)
+                        Inventory.hotbarItems[slotID] = null;
+                    else
+                        Inventory.hotbarItems[slotID].quantity -= 1;
                     cameraObject.GetComponent<Inventory>().ReloadInventory();
                 }
                 break;
         }
     }
 
-    public static void DestroyItem(int slotID, string slotType)
+    public static void DestroyItem(int slotID, string slotType, int amountDestroyed)
     {
         switch (slotType)
         {
             case "slot":
-                Inventory.items[slotID] = null;
+                if (Inventory.items[slotID].quantity - amountDestroyed <= 0)
+                    Inventory.items[slotID] = null;
+                else
+                    Inventory.items[slotID].quantity -= amountDestroyed;
                 break;
             case "hotbarSlot":
-                Inventory.hotbarItems[slotID] = null;
+                if (Inventory.hotbarItems[slotID].quantity - amountDestroyed <= 0)
+                    Inventory.hotbarItems[slotID] = null;
+                else
+                    Inventory.hotbarItems[slotID].quantity -= amountDestroyed;
                 break;
         }
     }
@@ -116,7 +133,10 @@ public class SlotManager : MonoBehaviour
                     GameObject removedItem;
                     removedItem = Instantiate(Resources.Load<GameObject>("Prefabs/ObjectsDropped/" + Inventory.items[slotID].prefabName), GameObject.FindGameObjectWithTag("Player").transform.position + Camera.main.transform.forward * 0.2f, Quaternion.identity);
                     removedItem.GetComponent<Rigidbody>().AddForce(Camera.main.transform.forward * 160f);
-                    Inventory.items[slotID] = null;
+                    if (Inventory.items[slotID].quantity - 1 == 0)
+                        Inventory.items[slotID] = null;
+                    else
+                        Inventory.items[slotID].quantity -= 1;
                     cameraObject.GetComponent<Inventory>().ReloadInventory();
                 }
                 break;
@@ -126,7 +146,10 @@ public class SlotManager : MonoBehaviour
                     GameObject removedItem;
                     removedItem = Instantiate(Resources.Load<GameObject>("Prefabs/ObjectsDropped/" + Inventory.hotbarItems[slotID].prefabName), GameObject.FindGameObjectWithTag("Player").transform.position + Camera.main.transform.forward * 0.2f, Quaternion.identity);
                     removedItem.GetComponent<Rigidbody>().AddForce(Camera.main.transform.forward * 160f);
-                    Inventory.hotbarItems[slotID] = null;
+                    if (Inventory.hotbarItems[slotID].quantity - 1 == 0)
+                        Inventory.hotbarItems[slotID] = null;
+                    else
+                        Inventory.hotbarItems[slotID].quantity -= 1;
                     cameraObject.GetComponent<Inventory>().ReloadInventory();
                 }
                 break;
@@ -143,6 +166,7 @@ public class SlotManager : MonoBehaviour
                 if (Inventory.items[slotID] != null)
                 {
                     grabbedObject = transform.Find("spriteSpawner(Clone)").gameObject;
+                    transform.Find("Quantity").GetComponent<TextMeshProUGUI>().text = "";
                     transform.SetAsLastSibling();
                     grabbedItemSlotID = slotID;
                     grabbedItemSlotInHotbar = false;
@@ -152,6 +176,7 @@ public class SlotManager : MonoBehaviour
                 if (Inventory.hotbarItems[slotID] != null)
                 {
                     grabbedObject = transform.Find("spriteSpawner(Clone)").gameObject;
+                    transform.Find("Quantity").GetComponent<TextMeshProUGUI>().text = "";
                     transform.SetAsLastSibling();
                     grabbedItemSlotID = slotID;
                     grabbedItemSlotInHotbar = true;

@@ -7,13 +7,15 @@ public class Recipe
 {
     public int id;
     public string name;
-    public int[] itemIds;
+    public IDQuantityPair[] itemIds;
+    public int quantityMade;
 
-    public Recipe(int _id, string _name, int[] _itemIds)
+    public Recipe(int _id, string _name, IDQuantityPair[] _itemIds, int _quantityMade)
     {
         id = _id;
         name = _name;
         itemIds = _itemIds;
+        quantityMade = _quantityMade;
     }
 }
 
@@ -21,4 +23,11 @@ public class Recipe
 public class Recipes
 {
     public Recipe[] recipes;
+}
+
+[System.Serializable]
+public class IDQuantityPair
+{
+    public int id;
+    public int quantity;
 }

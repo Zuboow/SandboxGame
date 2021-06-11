@@ -33,50 +33,69 @@ public class CraftingSlotManager : MonoBehaviour
         }
     }
 
-    static void CraftItem(Recipe recipe)
+    static void CraftItem(Recipe recipe) //needs to be adjusted to new quantity system
     {
         bool canCraft = true;
-        List<int> inventorySlotsWithRequiredItems = new List<int>();
-        List<int> hotbarSlotsWithRequiredItems = new List<int>();
-        foreach (int itemId in recipe.itemIds)
+        Dictionary<int, int> inventorySlotsWithQuantity = new Dictionary<int, int>();
+        Dictionary<int, int> hotbarSlotsWithQuantity = new Dictionary<int, int>();
+        foreach (IDQuantityPair iDQuantityPair in recipe.itemIds)
         {
-            bool itemAvailable = false;
+            int remainingItems = iDQuantityPair.quantity;
             foreach (KeyValuePair<int, Item> item in Inventory.items)
             {
-                if (!itemAvailable && item.Value != null && item.Value.id == itemId && !inventorySlotsWithRequiredItems.Contains(item.Key))
+                if (remainingItems > 0 && item.Value != null && item.Value.id == iDQuantityPair.id)
                 {
-                    inventorySlotsWithRequiredItems.Add(item.Key);
-                    itemAvailable = true;
+                    inventorySlotsWithQuantity.Add(item.Key, item.Value.quantity - remainingItems <= 0 ? item.Value.quantity : remainingItems);
+                    remainingItems -= item.Value.quantity;
+                    Debug.Log("Remaining items: " + remainingItems);
                     break;
                 }
             }
-            if (!itemAvailable)
-                foreach (KeyValuePair<int, Item> item in Inventory.hotbarItems)
+            foreach (KeyValuePair<int, Item> item in Inventory.hotbarItems)
+            {
+                if (remainingItems > 0 && item.Value != null && item.Value.id == iDQuantityPair.id)
                 {
-                    if (!itemAvailable && item.Value != null && item.Value.id == itemId && !hotbarSlotsWithRequiredItems.Contains(item.Key))
-                    {
-                        hotbarSlotsWithRequiredItems.Add(item.Key);
-                        itemAvailable = true;
-                    }
+                    hotbarSlotsWithQuantity.Add(item.Key, item.Value.quantity - remainingItems <= 0 ? item.Value.quantity : remainingItems);
+                    remainingItems -= item.Value.quantity;
+                    Debug.Log("Remaining items: " + remainingItems);
+                    break;
                 }
-            if (!itemAvailable)
+            }
+            if (remainingItems > 0)
             {
                 canCraft = false;
                 Debug.Log("Can't craft item");
                 break;
+            } else
+            {
+                Debug.Log("Can craft item");
             }
         }
         if (canCraft)
         {
-            foreach (int slotId in inventorySlotsWithRequiredItems)
+            foreach (KeyValuePair<int, int> inventorySlotWithQuantity in inventorySlotsWithQuantity)
             {
-                Inventory.items[slotId] = null;
+                if (Inventory.items[inventorySlotWithQuantity.Key].quantity - inventorySlotWithQuantity.Value <= 0)
+                {
+                    Inventory.items[inventorySlotWithQuantity.Key] = null;
+                }
+                else
+                {
+                    Inventory.items[inventorySlotWithQuantity.Key].quantity -= inventorySlotWithQuantity.Value;
+                }
             }
-            foreach (int slotId in hotbarSlotsWithRequiredItems)
+            foreach (KeyValuePair<int, int> hotbarSlotWithQuantity in hotbarSlotsWithQuantity)
             {
-                Inventory.hotbarItems[slotId] = null;
+                if (Inventory.hotbarItems[hotbarSlotWithQuantity.Key].quantity - hotbarSlotWithQuantity.Value <= 0)
+                {
+                    Inventory.hotbarItems[hotbarSlotWithQuantity.Key] = null;
+                }
+                else
+                {
+                    Inventory.hotbarItems[hotbarSlotWithQuantity.Key].quantity -= hotbarSlotWithQuantity.Value;
+                }
             }
-            SlotManager.AddItem(recipe.id, 1);
+            SlotManager.AddItem(recipe.id, recipe.quantityMade);
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadInventory();
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadHotbar();
         }

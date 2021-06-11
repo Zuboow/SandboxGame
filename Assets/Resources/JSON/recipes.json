@@ -3,12 +3,24 @@
 		{
 			"id": 1,
 			"name": "Wooden Pillar",
-			"itemIds": [ 20, 20 ]
+			"itemIds": [
+				{
+					"id": 20,
+					"quantity": 2
+				}
+			],
+			"quantityMade": 1
 		},
 		{
 			"id": 70,
 			"name": "Health Potion",
-			"itemIds": [ 50, 50, 50 ]
+			"itemIds": [
+				{
+					"id": 50,
+					"quantity": 3
+				}
+			],
+			"quantityMade": 1
 		}
 	]
 }

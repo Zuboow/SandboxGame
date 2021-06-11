@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 1727289829451347427}
   - component: {fileID: 7684150650209865685}
   - component: {fileID: 4152071632188568364}
-  - component: {fileID: 8175134302672464787}
   - component: {fileID: 8651761736156327171}
   - component: {fileID: 9166071107476076454}
+  - component: {fileID: -4651832290168733574}
   m_Layer: 0
   m_Name: Apple
   m_TagString: Untagged
@@ -83,19 +83,6 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!135 &8175134302672464787
-SphereCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2424002207402772464}
-  m_Material: {fileID: 13400000, guid: 2228901d2189e5546993b1729907fda9, type: 2}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.011448552
-  m_Center: {x: -0.0009996084, y: 0.0008630219, z: 0.0025947727}
 --- !u!54 &8651761736156327171
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -124,3 +111,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2bd6c8e90b899694c9e92b88c73dce44, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!64 &-4651832290168733574
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2424002207402772464}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 1
+  m_CookingOptions: 14
+  m_Mesh: {fileID: -5495902117074765545, guid: 2513397d90e040c46b0342f52214f3e0, type: 3}
