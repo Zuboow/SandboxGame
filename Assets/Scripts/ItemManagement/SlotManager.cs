@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -13,7 +14,7 @@ public class SlotManager : MonoBehaviour
     public static int grabbedItemSlotID = -1;
     public static bool grabbedItemSlotInHotbar = false;
     static float grabbedObjectDistance = 0.15f;
-
+    public static int quantityLimitPerSlot = 5;
 
     void Start()
     {
@@ -51,30 +52,48 @@ public class SlotManager : MonoBehaviour
         }
     }
 
-    public static bool AddItem(int id, int quantityAdded)
+    public static int AddItem(int id, int quantityAdded)
     {
+        int quantityLeft = quantityAdded;
         foreach (KeyValuePair<int, Item> key in Inventory.items)
         {
-            if (key.Value == null || (key.Value.id == id && key.Value.quantity < 10))
+            if (key.Value != null)
             {
-                foreach (Item i in Inventory.itemsFromJSON.items)
+                if (key.Value.id == id)
                 {
-                    if (id == i.id)
+                    if (key.Value.quantity + quantityLeft >= quantityLimitPerSlot)
                     {
-                        if (key.Value != null && key.Value.id == id && key.Value.quantity < 10) //tested limit
-                            Inventory.items[key.Key].quantity += quantityAdded;
-                        //needed case when adding custom quantity will make one slot full - should add remaining quantity to another free slot
-                        else
-                            Inventory.items[key.Key] = new Item(id, i.name, i.spriteName, i.prefabName, i.buildablePrefabName, quantityAdded, i.basicPrice, i.buildable, i.consumable);
-                        if (Inventory.inventoryOpened)
-                            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadInventory();
-
-                        return true;
+                        quantityLeft -= quantityLimitPerSlot - key.Value.quantity;
+                        key.Value.quantity = quantityLimitPerSlot;
+                    } else
+                    {
+                        key.Value.quantity += quantityLeft;
+                        quantityLeft = 0;
                     }
                 }
             }
         }
-        return false;
+
+        if (quantityLeft > 0)
+        {
+            foreach (KeyValuePair<int, Item> key in Inventory.items.ToList())
+            {
+                if (key.Value == null && quantityLeft > 0)
+                {
+                    foreach (Item i in Inventory.itemsFromJSON.items)
+                    {
+                        if (id == i.id)
+                        {
+                            Inventory.items[key.Key] = new Item(id, i.name, i.spriteName, i.prefabName, i.buildablePrefabName, quantityLeft <= quantityLimitPerSlot ? quantityLeft : quantityLimitPerSlot, i.basicPrice, i.buildable, i.consumable);
+                            quantityLeft = quantityLeft <= quantityLimitPerSlot ? 0 : quantityLeft - quantityLimitPerSlot;
+                        }
+                    }
+                }
+            }
+        }
+        if (quantityLeft != quantityAdded && Inventory.inventoryOpened)
+            GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadInventory();
+        return quantityLeft;
     }
 
     public static void UseItem(int slotID, string slotType)
@@ -154,8 +173,18 @@ public class SlotManager : MonoBehaviour
                 }
                 break;
         }
+    }
 
-
+    public static void ThrowItemOut(int itemID)
+    {
+        foreach (Item i in Inventory.itemsFromJSON.items)
+        {
+            if (itemID == i.id)
+            {
+                GameObject removedItem = Instantiate(Resources.Load<GameObject>("Prefabs/ObjectsDropped/" + i.prefabName), GameObject.FindGameObjectWithTag("Player").transform.position + Camera.main.transform.forward * 0.2f, Quaternion.identity);
+                removedItem.GetComponent<Rigidbody>().AddForce(Camera.main.transform.forward * 160f);
+            }
+        }
     }
 
     void GrabItem(int slotID, string slotType)

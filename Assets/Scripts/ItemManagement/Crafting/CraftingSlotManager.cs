@@ -47,8 +47,8 @@ public class CraftingSlotManager : MonoBehaviour
                 {
                     inventorySlotsWithQuantity.Add(item.Key, item.Value.quantity - remainingItems <= 0 ? item.Value.quantity : remainingItems);
                     remainingItems -= item.Value.quantity;
-                    Debug.Log("Remaining items: " + remainingItems);
-                    break;
+                    if (remainingItems <= 0)
+                        break;
                 }
             }
             foreach (KeyValuePair<int, Item> item in Inventory.hotbarItems)
@@ -57,8 +57,8 @@ public class CraftingSlotManager : MonoBehaviour
                 {
                     hotbarSlotsWithQuantity.Add(item.Key, item.Value.quantity - remainingItems <= 0 ? item.Value.quantity : remainingItems);
                     remainingItems -= item.Value.quantity;
-                    Debug.Log("Remaining items: " + remainingItems);
-                    break;
+                    if (remainingItems <= 0)
+                        break;
                 }
             }
             if (remainingItems > 0)
@@ -95,7 +95,14 @@ public class CraftingSlotManager : MonoBehaviour
                     Inventory.hotbarItems[hotbarSlotWithQuantity.Key].quantity -= hotbarSlotWithQuantity.Value;
                 }
             }
-            SlotManager.AddItem(recipe.id, recipe.quantityMade);
+            int craftedItemsToDrop = SlotManager.AddItem(recipe.id, recipe.quantityMade);
+            if (craftedItemsToDrop > 0)
+            {
+                for (int x = craftedItemsToDrop; x > 0; x--)
+                {
+                    SlotManager.ThrowItemOut(recipe.id);
+                }
+            }
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadInventory();
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Inventory>().ReloadHotbar();
         }

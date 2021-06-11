@@ -232,7 +232,7 @@ public class BuildingManager : MonoBehaviour
         {
             if (i.buildablePrefabName == buildableName.Split('(')[0].Trim())
             {
-                if (SlotManager.AddItem(i.id, 1))
+                if (SlotManager.AddItem(i.id, 1) == 0)
                     return true;
                 else
                 {
