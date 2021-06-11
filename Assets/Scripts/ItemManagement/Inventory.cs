@@ -34,7 +34,7 @@ public class Inventory : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I) && HealthManager.playerAlive)
+        if ((Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.Tab)) && HealthManager.playerAlive)
         {
             switch (inventoryOpened)
             {
@@ -129,6 +129,7 @@ public class Inventory : MonoBehaviour
         }
         spawnedHotbarSlots.Clear();
         SlotManager.grabbedItemSlotID = -1;
+
     }
 
     public void ReloadInventory()

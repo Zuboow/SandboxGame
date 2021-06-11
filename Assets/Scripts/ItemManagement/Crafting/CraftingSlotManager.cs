@@ -64,11 +64,7 @@ public class CraftingSlotManager : MonoBehaviour
             if (remainingItems > 0)
             {
                 canCraft = false;
-                Debug.Log("Can't craft item");
                 break;
-            } else
-            {
-                Debug.Log("Can craft item");
             }
         }
         if (canCraft)

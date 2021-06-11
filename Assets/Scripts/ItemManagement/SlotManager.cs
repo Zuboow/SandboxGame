@@ -11,7 +11,9 @@ public class SlotManager : MonoBehaviour
 {
     static GameObject cameraObject;
     static GameObject grabbedObject;
+    public static Item grabbedItem;
     public static int grabbedItemSlotID = -1;
+    public static int grabbedItemQuantity = 0;
     public static bool grabbedItemSlotInHotbar = false;
     static float grabbedObjectDistance = 0.15f;
     public static int quantityLimitPerSlot = 5;
@@ -34,7 +36,7 @@ public class SlotManager : MonoBehaviour
 
     public void ManageInput(string name)
     {
-        if (Input.GetMouseButtonDown(1) && grabbedItemSlotID == -1)
+        if ((Input.GetKeyDown(KeyCode.O) || Input.GetMouseButtonDown(1)) && grabbedItemSlotID == -1)
         {
             RemoveItem(Int32.Parse(name.Split('_')[1]), name.Split('_')[0]);
         }
@@ -59,15 +61,12 @@ public class SlotManager : MonoBehaviour
 
         if (quantityLeft > 0)
             quantityLeft = TryToFillStacksWithItem(Inventory.hotbarItems, id, quantityLeft);
-        Debug.Log("After TryToFillStackWithItem on hotbar: " + quantityLeft);
 
         if (quantityLeft > 0)
             quantityLeft = TryToAddItemInSpecificQuantity(Inventory.items, id, quantityLeft);
-        Debug.Log("After TryToAddItemInSpecificQuantity on inv: " + quantityLeft);
 
         if (quantityLeft > 0)
             quantityLeft = TryToAddItemInSpecificQuantity(Inventory.hotbarItems, id, quantityLeft);
-        Debug.Log("After TryToAddItemInSpecificQuantity on hotbar: " + quantityLeft);
 
 
         if (quantityLeft != quantityAdded && Inventory.inventoryOpened)
@@ -223,6 +222,8 @@ public class SlotManager : MonoBehaviour
                     transform.Find("Quantity").GetComponent<TextMeshProUGUI>().text = "";
                     transform.SetAsLastSibling();
                     grabbedItemSlotID = slotID;
+                    grabbedItem = Inventory.items[slotID];
+                    grabbedItemQuantity = Inventory.items[slotID].quantity;
                     grabbedItemSlotInHotbar = false;
                 }
                 break;
@@ -233,6 +234,8 @@ public class SlotManager : MonoBehaviour
                     transform.Find("Quantity").GetComponent<TextMeshProUGUI>().text = "";
                     transform.SetAsLastSibling();
                     grabbedItemSlotID = slotID;
+                    grabbedItem = Inventory.hotbarItems[slotID];
+                    grabbedItemQuantity = Inventory.hotbarItems[slotID].quantity;
                     grabbedItemSlotInHotbar = true;
                 }
                 break;
@@ -248,24 +251,75 @@ public class SlotManager : MonoBehaviour
     void ManageMovingObjects(int selectedItemSlotID, string slotType)
     {
         Item originalItemFromSelectedSlot = slotType == "hotbarSlot" ? Inventory.hotbarItems[selectedItemSlotID] : Inventory.items[selectedItemSlotID];
-        if (slotType == "slot")
+
+        bool replaceItems = false;
+        if (originalItemFromSelectedSlot != null && (!grabbedItemSlotInHotbar ? Inventory.items[grabbedItemSlotID].id : Inventory.hotbarItems[grabbedItemSlotID].id) == originalItemFromSelectedSlot.id)
         {
-            Inventory.items[selectedItemSlotID] = grabbedItemSlotInHotbar ? Inventory.hotbarItems[grabbedItemSlotID] : Inventory.items[grabbedItemSlotID];
+            if ((slotType == "slot" ? Inventory.items[selectedItemSlotID].quantity : Inventory.hotbarItems[selectedItemSlotID].quantity) + grabbedItemQuantity <= quantityLimitPerSlot && grabbedItemSlotID != selectedItemSlotID)
+            {
+                if (slotType == "slot")
+                    Inventory.items[selectedItemSlotID].quantity += grabbedItemQuantity;
+                else
+                    Inventory.hotbarItems[selectedItemSlotID].quantity += grabbedItemQuantity;
+
+                if (!grabbedItemSlotInHotbar)
+                    Inventory.items[grabbedItemSlotID] = null;
+                else
+                    Inventory.hotbarItems[grabbedItemSlotID] = null;
+
+                grabbedItemQuantity = 0;
+
+            }
+            else if (originalItemFromSelectedSlot.quantity < quantityLimitPerSlot && grabbedItemSlotID != selectedItemSlotID)
+            {
+                grabbedItemQuantity -= quantityLimitPerSlot - (slotType == "slot" ? Inventory.items[selectedItemSlotID].quantity : Inventory.hotbarItems[selectedItemSlotID].quantity);
+
+                if (slotType == "slot")
+                    Inventory.items[selectedItemSlotID].quantity = quantityLimitPerSlot;
+                else
+                    Inventory.hotbarItems[selectedItemSlotID].quantity = quantityLimitPerSlot;
+
+                if (!grabbedItemSlotInHotbar)
+                    Inventory.items[grabbedItemSlotID].quantity = grabbedItemQuantity;
+                else
+                    Inventory.hotbarItems[grabbedItemSlotID].quantity = grabbedItemQuantity;
+
+                replaceItems = false;
+            }
+            else
+            {
+                replaceItems = true;
+            }
         }
         else
         {
-            Inventory.hotbarItems[selectedItemSlotID] = grabbedItemSlotInHotbar ? Inventory.hotbarItems[grabbedItemSlotID] : Inventory.items[grabbedItemSlotID];
+            if (slotType == "slot")
+            {
+                Inventory.items[selectedItemSlotID] = grabbedItemSlotInHotbar ? Inventory.hotbarItems[grabbedItemSlotID] : Inventory.items[grabbedItemSlotID];
+            }
+            else
+            {
+                Inventory.hotbarItems[selectedItemSlotID] = grabbedItemSlotInHotbar ? Inventory.hotbarItems[grabbedItemSlotID] : Inventory.items[grabbedItemSlotID];
+            }
+            replaceItems = true;
         }
 
-        if (!grabbedItemSlotInHotbar)
+
+        if (replaceItems)
         {
-            Inventory.items[grabbedItemSlotID] = originalItemFromSelectedSlot;
-        }
-        else
-        {
-            Inventory.hotbarItems[grabbedItemSlotID] = originalItemFromSelectedSlot;
+            if (!grabbedItemSlotInHotbar)
+            {
+                Inventory.items[selectedItemSlotID] = Inventory.items[grabbedItemSlotID];
+                Inventory.items[grabbedItemSlotID] = originalItemFromSelectedSlot;
+            }
+            else
+            {
+                Inventory.hotbarItems[selectedItemSlotID] = Inventory.hotbarItems[grabbedItemSlotID];
+                Inventory.hotbarItems[grabbedItemSlotID] = originalItemFromSelectedSlot;
+            }
         }
         grabbedItemSlotID = -1;
+        grabbedItem = null;
         grabbedItemSlotInHotbar = false;
         cameraObject.GetComponent<Inventory>().ReloadInventory();
     }
